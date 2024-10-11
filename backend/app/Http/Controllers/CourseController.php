@@ -20,10 +20,36 @@ class CourseController extends Controller
             'profesor' => 'required|string',
             'aula' => 'required|string',
             'horario' => 'required',
-            'estado' => 'required'
         ]);
 
         $courses = Course::create($validatedData);
         return response()->json($courses, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $course = Course::find($id);
+        if (is_null($course)) {
+            return response()->json(['message' => 'Course not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'estado' => 'required | boolean'
+        ]);
+
+        $course->update($validatedData);
+
+        return response()->json($course, 200);
+    }
+
+    public function destroy($id)
+    {
+        $course = Course::find($id);
+        if (is_null($course)) {
+            return response()->json(['message' => 'Course not found'], 404);
+        }
+
+        $course->delete();
+        return response()->json(null, 204);
     }
 }

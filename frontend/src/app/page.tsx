@@ -24,8 +24,6 @@ export default function Home() {
     e.preventDefault();
 
     try {
-      await api.get("/sanctum/csrf-cookie");
-
       const response = await api.post("/courses", newCourse);
 
       setCourses([...courses, response.data]);
@@ -58,7 +56,6 @@ export default function Home() {
     currentStatus: boolean
   ) => {
     try {
-      await api.get("/sanctum/csrf-cookie");
       const response = await api.put(`/courses/${courseId}`, {
         estado: !currentStatus,
       });

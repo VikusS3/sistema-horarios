@@ -3,21 +3,20 @@
 use App\Http\Controllers\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//definir la ruta del csrf token
-Route::get('/sanctum/csrf-cookie', CsrfCookieController::class);
-// Route::middleware('auth:sanctum')->group(function () {
+Route::get('/courses', [CourseController::class, 'index']);
+
+
+// Route::middleware(['auth:sanctum'])->group(function () {
+//     Route::delete('/courses/{course}', [CourseController::class, 'destroy']);
+//     Route::put('/courses/{course}', [CourseController::class, 'update']);
 //     Route::post('/courses', [CourseController::class, 'store']);
-//     Route::put('/courses/{id}', [CourseController::class, 'update']);
-//     Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
 // });
 
+Route::delete('/courses/{course}', [CourseController::class, 'destroy']);
+Route::put('/courses/{course}', [CourseController::class, 'update']);
 Route::post('/courses', [CourseController::class, 'store']);
-Route::put('/courses/{id}', [CourseController::class, 'update']);
-Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
-Route::get('/courses', [CourseController::class, 'index']);

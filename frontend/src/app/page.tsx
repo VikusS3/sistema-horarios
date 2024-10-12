@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "./lib/api";
+import { api } from "./lib/api";
 import { Course, CourseInput } from "./types";
 
 export default function Home() {
@@ -24,7 +24,10 @@ export default function Home() {
     e.preventDefault();
 
     try {
+      await api.get("/sanctum/csrf-cookie");
+
       const response = await api.post("/courses", newCourse);
+
       setCourses([...courses, response.data]);
       setNewCourse({
         nombre_curso: "",
@@ -50,6 +53,29 @@ export default function Home() {
     fetchCourses();
   }, []);
 
+  const toggleCourseState = async (
+    courseId: number,
+    currentStatus: boolean
+  ) => {
+    try {
+      await api.get("/sanctum/csrf-cookie");
+      const response = await api.put(`/courses/${courseId}`, {
+        estado: !currentStatus,
+      });
+
+      // Actualizamos el estado de los cursos
+      setCourses(
+        courses.map((course) =>
+          course.id === courseId
+            ? { ...course, estado: response.data.estado }
+            : course
+        )
+      );
+    } catch (error) {
+      console.error("Error updating course status:", error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Lista de Cursos</h1>
@@ -61,6 +87,7 @@ export default function Home() {
             <th className="px-4 py-2">Aula</th>
             <th className="px-4 py-2">Horario</th>
             <th className="px-4 py-2">Estado</th>
+            <th className="px-4 py-2">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -75,6 +102,18 @@ export default function Home() {
               <td className="border px-4 py-2">{course.horario}</td>
               <td className="border px-4 py-2">
                 {course.estado ? "En curso" : "No iniciado"}
+              </td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => toggleCourseState(course.id, course.estado)}
+                  className={`${
+                    course.estado ? "bg-red-500" : "bg-green-500"
+                  } text-white px-4 py-2 rounded`}
+                >
+                  {course.estado
+                    ? "Marcar como no iniciado"
+                    : "Marcar como en curso"}
+                </button>
               </td>
             </tr>
           ))}
